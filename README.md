@@ -1,112 +1,151 @@
 # Inkheaven — Tattoo Studio Management System
 
-Inkheaven is a complete digital setup for a tattoo studio. It provides a modern booking website for clients and a clean management dashboard for studio staff, with zero monthly database or subscription fees.
-
----
-
-## What Does This Project Do?
-
-This system automates the entire process of booking and managing tattoo appointments—from a client filling out a form on their phone to the artist confirming their spot.
+A full-stack portfolio project: a luxury booking website for clients and an
+internal dashboard for studio staff, both powered by a single self-hosted
+automation workflow — no database, no subscription, no monthly fees.
 
 ```
-[ Customer Submits Form ] ──▶ [ Automated Checks & Storage ] ──▶ [ Studio Accepts / Changes Slot ] ──▶ [ Email Sent ]
+[ Client submits form ] ──▶ [ Validated & stored ] ──▶ [ Studio confirms / reschedules ] ──▶ [ Email sent ]
 ```
 
 ---
 
-## How It Helps the Studio
+## What I Built
 
-| Role | What They See & Do | Key Capabilities |
-| --- | --- | --- |
-| **For Clients** *(The Website)* | A clean, luxury website to explore tattoo styles, view past work, and request an appointment. | • Easy booking form with a validated phone number.<br>• Instant confirmation message upon submission.<br>• Option to pick a preferred session time. |
-| **For Studio Staff** *(The Dashboard)* | An internal admin tool (like a digital planner) to view, organize, and manage appointments. | • View all incoming bookings in real-time.<br>• One-click confirmation, completion, or cancellation.<br>• Smart rescheduling: offers clients up to 3 alternative slots if the requested time is busy.<br>• Walk-in customer management & CSV list exporting. |
-| **Behind the Scenes** *(The Automation Engine)* | An automated engine that processes bookings, organizes storage, and emails clients. | • **Zero Database Costs:** Runs on a self-hosted, lightweight background service.<br>• Sends automatic styled confirmation and rescheduling emails.<br>• Built-in spam protection (honeypot field + per-IP rate limiting). |
+| Piece | What it does |
+| --- | --- |
+| **`inkheaven/`** — the website | A single-page editorial site (styles, portfolio, process, testimonials, FAQ) ending in a booking form. |
+| **`inkdesk/`** — the dashboard | An admin tool for viewing, filtering, confirming, rescheduling and exporting appointments. |
+| **`n8n-automation/`** — the backend | One workflow that is both the public booking intake and the admin API, plus the customer emails. |
 
----
-
-## Simple Feature Breakdown
-
-* **Reschedule Without Hassle:** If a client requests a busy time slot, staff can click one button to suggest 3 alternative open slots and send an automated email offer.
-* **No Software Lock-in:** The entire system runs locally or on private studio hardware—no third-party software subscriptions required.
-* **Offline Demo Mode:** The admin dashboard includes a built-in demo mode for testing and staff training without affecting real data.
+The two apps talk to the *same* webhook URL. The workflow tells them apart by
+the payload: no `action` field = a website booking, an `action` field = an
+admin API call. That one design decision is what let me ship a backend with no
+server code and no database.
 
 ---
 
-## Quickstart & Launch Commands
+## Highlights
 
-Run every command below from the **repository root**.
+**For clients**
+- Immersive one-page site with masked line reveals, a pinned horizontal process section, and smooth Lenis scrolling — all disabled under `prefers-reduced-motion`.
+- Booking form with per-field validation, a fixed `+91` ten-digit phone input, a masked date field, and a hidden honeypot that silently swallows bots.
+- Submitting shows an instant confirmation; nothing leaves the browser except the same-origin `POST /api/bookings`.
 
-### Prerequisites
-* **Node.js 20.19+ or 22.12+** (Vite 8 requires `"node": "^20.19.0 || >=22.12.0"`)
-* **Docker**
-* Free ports: `5678` (Automation Backend), `5173` (Website), `5174` (Admin Dashboard)
+**For studio staff**
+- Live appointment list with sortable columns, status chips, scope filters and debounced search across name, phone, email and ID.
+- One-click confirm / complete / cancel, plus internal notes and a client-history view.
+- **Reschedule offer**: pick up to 3 alternative slots, add a note, send it — the original slot stays untouched until the client accepts.
+- Walk-in bookings, CSV export, keyboard shortcuts (`/`, `n`, `Esc`).
+- **Demo mode**: with no endpoint configured the whole dashboard runs on local mock data, so it can be explored without touching anything real.
+
+**Behind the scenes**
+- Slot engine with a single source of truth: rejects unreadable dates, past days, closed days, blocked dates, out-of-hours times and double-bookings.
+- Unavailable requests are never dropped — they're stored with a flag and the client is emailed the reason plus 3 real alternatives.
+- Three styled transactional emails (confirmation / reschedule / unavailable), hand-built as inline-styled tables so they survive Gmail and Outlook.
+- Proxy hardening: field allowlist, 16KB body cap, per-IP rate limiting, 8s upstream timeout, generic errors that never leak the upstream URL.
 
 ---
 
-### Step 1: Start the Background Service (n8n)
+## Tech Stack
 
-Start the local automation engine:
+| Layer | Technology |
+| --- | --- |
+| UI | React 19, Vite 8, plain CSS with custom-property design tokens |
+| Animation | GSAP 3 + `@gsap/react`, ScrollTrigger, Lenis |
+| Fonts / images | Self-hosted Bodoni Moda + Manrope; WebP/AVIF generated with `sharp` |
+| Backend | n8n (single Code-node workflow, webhook trigger) |
+| Storage | n8n workflow static data — no database |
+| Email | n8n Email Send node over SMTP |
+| Lint | ESLint 10 flat config |
+
+---
+
+## Run the Demo
+
+Everything below runs from the repository root. You'll need **Node.js 20.19+
+or 22.12+** and **Docker**, with ports `5678`, `5173` and `5174` free.
+
+### 1. Start n8n
 
 ```bash
 docker run -d --name n8n -p 5678:5678 -v n8n_data:/home/node/.n8n -e N8N_HOST=localhost -e N8N_PORT=5678 -e N8N_PROTOCOL=http -e WEBHOOK_URL=http://localhost:5678/ -e N8N_SECURE_COOKIE=false docker.n8n.io/n8nio/n8n
 ```
 
-The `-v n8n_data:/home/node/.n8n` volume is what makes bookings survive a container recreation.
+Then in the n8n UI at `http://localhost:5678`:
 
-1. Open `http://localhost:5678` in your browser.
-2. Go to **Workflows** → **Import from File** → choose `n8n-automation/inkdesk-bookings.json`.
-3. Click **Publish** (or toggle **Active**). An imported workflow is a draft — until it is published, the production URL returns **404**.
-4. *(Optional, enables email)* Add an **SMTP** credential under **Credentials**, then select it on both the `Email: Confirmation` and `Email: Reschedule` nodes. Both ship with the placeholder `REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID`, so nothing sends until you replace it. Bookings work fine without this.
+1. **Workflows** → **Import from File** → `n8n-automation/inkdesk-bookings.json`
+2. **Publish** it (or toggle **Active**) — an imported workflow is a draft, and
+   a draft returns **404** on the production URL.
+3. *Optional, only if you want the demo to send real email:* add an SMTP
+   credential and select it on the `Email: Confirmation` and
+   `Email: Reschedule` nodes. Both ship with a placeholder ID
+   (`REPLACE_WITH_YOUR_SMTP_CREDENTIAL_ID`), so nothing sends until you do.
 
-Verify connection:
+Check it's alive:
 
 ```bash
 curl -X POST http://localhost:5678/webhook/inkdesk-booking -H "Content-Type: text/plain;charset=utf-8" -d '{"action":"ping"}'
 ```
 
-Full workflow documentation: [`n8n-automation/README.md`](n8n-automation/README.md)
+### 2. Start the website
 
----
-
-### Step 2: Launch the Client Website
-
-Open website folder (from the repo root):
 ```bash
 cd inkheaven
-```
-
-Install components:
-```bash
 npm i
-```
-
-Run website:
-```bash
 npm run dev
 ```
 
-* Open `http://localhost:5173`, click the gear icon (bottom-right), and enter:  
-  `http://localhost:5678/webhook/inkdesk-booking`
+Open `http://localhost:5173`, click the **gear icon** (bottom-right) and paste:
+
+```
+http://localhost:5678/webhook/inkdesk-booking
+```
+
+### 3. Start the dashboard
+
+In a new terminal, back at the repo root:
+
+```bash
+cd inkdesk
+npm i
+npm run dev
+```
+
+Open `http://localhost:5174`, go to **Settings** (gear icon), paste the same
+URL, then **Test connection** → **Save**.
+
+> Skip this step entirely to stay in **demo mode** — the dashboard will show
+> the `DEMO` badge and run on local mock data.
+
+### 4. See it work end to end
+
+1. Submit a booking at `http://localhost:5173/#booking`
+2. Refresh `http://localhost:5174` — it's there as `new` / `website`
+3. Open it and hit **Confirm**
 
 ---
 
-### Step 3: Launch the Admin Dashboard
+## Scripts
 
-Open dashboard folder (from the repo root, or `cd ..` first):
-```bash
-cd inkdesk
-```
+| Where | Script | What it does |
+| --- | --- | --- |
+| `inkheaven` | `npm run dev` | Dev server + booking API on `:5173` |
+| `inkheaven` | `npm run build` / `lint` | Production build / ESLint |
+| `inkheaven` | `npm run preview` | Serve `dist/` with CSP headers |
+| `inkheaven` | `npm run preview:prod` | Dependency-free production server |
+| `inkheaven` | `npm run audit` | Build + serve for Lighthouse on `:4173` |
+| `inkdesk` | `npm run dev` / `build` / `preview` | Dev server, build, static preview |
 
-Install components:
-```bash
-npm i
-```
+---
 
-Run dashboard:
-```bash
-npm run dev
-```
+## Notes
 
-* Open `http://localhost:5174`, open **Settings** (gear icon), and enter:  
-  `http://localhost:5678/webhook/inkdesk-booking`
-* Click **Test connection**, then **Save**. Without an endpoint the header shows **DEMO** and the dashboard runs on local mock data.
+- Bookings live in n8n's workflow static data. Re-importing the workflow or
+  recreating the container without the `n8n_data` volume wipes them — fine for
+  a demo, which is exactly why the Docker command above includes the volume.
+- The n8n webhook has no authentication, and the webhook URL the site sends is
+  client-supplied. This is a local/portfolio setup, not something to expose to
+  the public internet as-is.
+- Full backend reference (every action, the email templates, slot logic):
+  [`n8n-automation/README.md`](n8n-automation/README.md)
