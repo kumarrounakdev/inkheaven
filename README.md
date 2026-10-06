@@ -20,6 +20,7 @@ subscription.
 
 Both apps hit the same webhook URL. The workflow tells them apart by payload:
 no `action` field = website booking, `action` field = admin API call.
+Full backend reference: [`n8n-automation/README.md`](n8n-automation/README.md)
 
 ---
 
@@ -38,14 +39,32 @@ no `action` field = website booking, `action` field = admin API call.
 
 ## Tech Stack
 
+### `inkheaven/` — Website
+
 | Layer | Technology |
 | --- | --- |
-| UI | React 19, Vite 8, plain CSS design tokens |
-| Animation | GSAP 3, `@gsap/react`, ScrollTrigger, Lenis |
-| Fonts / images | Self-hosted Bodoni Moda + Manrope; WebP/AVIF via `sharp` |
-| Backend | n8n — single Code-node workflow, webhook trigger |
-| Storage | n8n workflow static data (no database) |
-| Email | n8n Email Send node over SMTP |
+| UI | React 19 + Vite 8 |
+| Styling | Plain CSS design tokens |
+| Animation | GSAP 3, ScrollTrigger, Lenis |
+| Images | WebP / AVIF via `sharp` |
+
+### `inkdesk/` — Dashboard
+
+| Layer | Technology |
+| --- | --- |
+| UI | React 19 + Vite 8 |
+| Styling | Plain CSS design tokens |
+| Routing | Hash-based (no router dependency) |
+| Data | API client + local mock backend |
+
+### `n8n-automation/` — Backend
+
+| Layer | Technology |
+| --- | --- |
+| Runtime | n8n (Docker) |
+| Logic | Single Code node — routing, slot engine, validation |
+| Storage | Workflow static data — no database |
+| Email | SMTP via the Email Send node |
 
 ---
 
@@ -84,7 +103,13 @@ curl -X POST http://localhost:5678/webhook/inkdesk-booking -H "Content-Type: tex
 
 ```bash
 cd inkheaven
+```
+
+```bash
 npm i
+```
+
+```bash
 npm run dev
 ```
 
@@ -100,7 +125,13 @@ New terminal, back at the repo root:
 
 ```bash
 cd inkdesk
+```
+
+```bash
 npm i
+```
+
+```bash
 npm run dev
 ```
 
@@ -125,11 +156,3 @@ Skip this to stay in **demo mode** (shows a `DEMO` badge).
 | `inkheaven` | `npm run audit` | Lighthouse target on `:4173` |
 | `inkdesk` | `npm run dev` / `build` / `preview` | Dev, build, static preview |
 
----
-
-## Notes
-
-- Bookings live in n8n static data — re-importing the workflow or recreating
-  the container without the `n8n_data` volume wipes them.
-- No authentication on the webhook; this is a local setup, not for public exposure.
-- Backend reference: [`n8n-automation/README.md`](n8n-automation/README.md)
