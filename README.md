@@ -10,17 +10,6 @@ subscription.
 
 ---
 
-## Prerequisites
-
-| Requirement | Version / Detail |
-| --- | --- |
-| **Node.js** | 20.19+ or 22.12+ |
-| **npm** | Ships with Node |
-| **Docker** | For the n8n backend |
-| **Free ports** | `5678` (n8n), `5173` (website), `5174` (dashboard) |
-
----
-
 ## What I Built
 
 | Piece | What it does |
@@ -57,6 +46,17 @@ no `action` field = website booking, `action` field = admin API call.
 | Backend | n8n — single Code-node workflow, webhook trigger |
 | Storage | n8n workflow static data (no database) |
 | Email | n8n Email Send node over SMTP |
+
+---
+
+## Prerequisites
+
+| Requirement | Version / Detail |
+| --- | --- |
+| **Node.js** | 20.19+ or 22.12+ |
+| **npm** | Ships with Node |
+| **Docker** | For the n8n backend |
+| **Free ports** | `5678` (n8n), `5173` (website), `5174` (dashboard) |
 
 ---
 
