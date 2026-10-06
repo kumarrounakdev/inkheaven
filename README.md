@@ -26,14 +26,15 @@ Full backend reference: [`n8n-automation/README.md`](n8n-automation/README.md)
 
 ## Highlights
 
-- **Website:** GSAP masked line reveals, pinned horizontal process section, Lenis smooth scroll — all disabled under `prefers-reduced-motion`.
-- **Booking form:** per-field validation, fixed `+91` ten-digit phone, masked date field, hidden honeypot for bots.
-- **Dashboard:** sortable list, status chips, scope filters, search, one-click confirm/complete/cancel, internal notes, client history, CSV export, keyboard shortcuts (`/`, `n`, `Esc`).
-- **Reschedule offer:** pick up to 3 alternative slots and email the client — the original slot stays put until they accept.
-- **Demo mode:** no endpoint configured → the whole dashboard runs on local mock data.
-- **Slot engine:** rejects unreadable dates, past days, closed days, blocked dates, out-of-hours times and double-bookings. Rejected requests are still stored and the client is emailed the reason plus 3 alternatives.
-- **Hardened proxy:** field allowlist, 16KB body cap, per-IP rate limiting, 8s upstream timeout, generic errors.
-- **Emails:** three styled templates built as inline-styled tables so they survive Gmail and Outlook.
+| Area | Feature |
+| --- | --- |
+| **Website** | GSAP reveals, pinned process section, Lenis scroll — all respect `prefers-reduced-motion` |
+| **Booking form** | Field validation, fixed `+91` phone, masked date, honeypot for bots |
+| **Dashboard** | Sort, filter, search, confirm/complete/cancel, CSV export, shortcuts |
+| **Rescheduling** | Offer up to 3 alternative slots — original slot stays until accepted |
+| **Demo mode** | Runs on local mock data with no endpoint configured |
+| **Slot engine** | Rejects closed, blocked, taken or out-of-hours slots, then suggests alternatives |
+| **Emails** | Three styled templates, table-based so they survive Gmail and Outlook |
 
 ---
 
@@ -155,4 +156,3 @@ Skip this to stay in **demo mode** (shows a `DEMO` badge).
 | `inkheaven` | `npm run preview:prod` | Dependency-free production server |
 | `inkheaven` | `npm run audit` | Lighthouse target on `:4173` |
 | `inkdesk` | `npm run dev` / `build` / `preview` | Dev, build, static preview |
-
