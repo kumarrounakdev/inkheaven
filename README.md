@@ -1,8 +1,11 @@
 # Inkheaven — Tattoo Studio Management System
 
-A portfolio project: a booking website for clients and a dashboard for studio
-staff, both powered by a single self-hosted n8n workflow — no database, no
-subscription.
+## About
+
+A complete tattoo studio system in three parts: a public booking website, an
+internal admin dashboard, and a single self-hosted n8n workflow that serves as
+the backend for both. The apps share one webhook URL, so there is no database,
+no API server and no subscription to run.
 
 ```
 [ Client submits form ] ──▶ [ Validated & stored ] ──▶ [ Studio confirms / reschedules ] ──▶ [ Email sent ]
@@ -40,32 +43,13 @@ Full backend reference: [`n8n-automation/README.md`](n8n-automation/README.md)
 
 ## Tech Stack
 
-### `inkheaven/` — Website
-
-| Layer | Technology |
-| --- | --- |
-| UI | React 19 + Vite 8 |
-| Styling | Plain CSS design tokens |
-| Animation | GSAP 3, ScrollTrigger, Lenis |
-| Images | WebP / AVIF via `sharp` |
-
-### `inkdesk/` — Dashboard
-
-| Layer | Technology |
-| --- | --- |
-| UI | React 19 + Vite 8 |
-| Styling | Plain CSS design tokens |
-| Routing | Hash-based (no router dependency) |
-| Data | API client + local mock backend |
-
-### `n8n-automation/` — Backend
-
-| Layer | Technology |
-| --- | --- |
-| Runtime | n8n (Docker) |
-| Logic | Single Code node — routing, slot engine, validation |
-| Storage | Workflow static data — no database |
-| Email | SMTP via the Email Send node |
+| `inkheaven/` — Website | | `inkdesk/` — Dashboard | | `n8n-automation/` — Backend | |
+| --- | --- | --- | --- | --- | --- |
+| **Layer** | **Technology** | **Layer** | **Technology** | **Layer** | **Technology** |
+| UI | React 19 + Vite 8 | UI | React 19 + Vite 8 | Runtime | n8n (Docker) |
+| Styling | Plain CSS design tokens | Styling | Plain CSS design tokens | Logic | Single Code node — routing, slot engine, validation |
+| Animation | GSAP 3, ScrollTrigger, Lenis | Routing | Hash-based (no router dependency) | Storage | Workflow static data — no database |
+| Images | WebP / AVIF via `sharp` | Data | API client + local mock backend | Email | SMTP via the Email Send node |
 
 ---
 
@@ -156,3 +140,4 @@ Skip this to stay in **demo mode** (shows a `DEMO` badge).
 | `inkheaven` | `npm run preview:prod` | Dependency-free production server |
 | `inkheaven` | `npm run audit` | Lighthouse target on `:4173` |
 | `inkdesk` | `npm run dev` / `build` / `preview` | Dev, build, static preview |
+
