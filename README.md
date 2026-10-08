@@ -51,7 +51,6 @@ Full backend reference: [`n8n-automation/README.md`](n8n-automation/README.md)
 | **Animation** | GSAP 3, ScrollTrigger, Lenis |
 | **Images** | WebP / AVIF via `sharp` |
 
----
 
 ### 🖥️ `inkdesk/` — Dashboard
 | Layer | Technology |
@@ -61,7 +60,6 @@ Full backend reference: [`n8n-automation/README.md`](n8n-automation/README.md)
 | **Routing** | Hash-based (no router dependency) |
 | **Data** | API client + local mock backend |
 
----
 
 ### ⚡ `n8n-automation/` — Backend
 | Layer | Technology |
@@ -70,17 +68,6 @@ Full backend reference: [`n8n-automation/README.md`](n8n-automation/README.md)
 | **Logic** | Single Code node — routing, slot engine, validation |
 | **Storage** | Workflow static data — no database |
 | **Email** | SMTP via the Email Send node |
-
----
-
-### Compact Grid View (Alternative Format)
-
-| 🌐 `inkheaven/` (Website) | 🖥️ `inkdesk/` (Dashboard) | ⚡ `n8n-automation/` (Backend) |
-| :--- | :--- | :--- |
-| **UI:** React 19 + Vite 8 | **UI:** React 19 + Vite 8 | **Runtime:** n8n (Docker) |
-| **Styling:** CSS design tokens | **Styling:** CSS design tokens | **Logic:** Single Code node |
-| **Animation:** GSAP 3, ScrollTrigger, Lenis | **Routing:** Hash-based | **Storage:** Workflow static data |
-| **Images:** WebP / AVIF (`sharp`) | **Data:** API client + local mock | **Email:** SMTP via Email Send node |
 
 ---
 
